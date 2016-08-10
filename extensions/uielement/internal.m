@@ -297,6 +297,23 @@ static int watcher_stop(lua_State* L) {
     return 1;
 }
 
+// hs.uielement.darkModeStatus() -> bool
+// Function
+// Gets the status of OSX UI dark mode
+//
+// Parameters:
+//  * None
+//
+// Returns:
+//  * A boolean, true if dark mode is activated, otherwise false
+static int uielement_darkModeStatus(lua_State* L) {
+    NSString *mode = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"];
+    BOOL isActivated = [mode isEqualToString: @"Dark"];
+    lua_pushboolean(L, (int) isActivated);
+
+    return 1;
+}
+
 /// hs.uielement.focusedElement() -> element or nil
 /// Function
 /// Gets the currently focused UI element
@@ -338,6 +355,7 @@ static const luaL_Reg uielementlib[] = {
     {"role", uielement_role},
     {"isWindow", uielement_iswindow},
     {"_newWatcher", uielement_newWatcher},
+    {"darkModeStatus", uielement_darkModeStatus},
     {"focusedElement", uielement_focusedElement},
     {"selectedText", uielement_selectedText},
     {NULL, NULL}
