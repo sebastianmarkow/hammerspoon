@@ -299,17 +299,43 @@ static int watcher_stop(lua_State* L) {
 
 // hs.uielement.darkModeStatus() -> bool
 // Function
-// Gets the status of OSX UI dark mode
+// Gets the status of OSX UI dark mode (supported on OSX version >= 10.10)
 //
 // Parameters:
 //  * None
 //
 // Returns:
-//  * A boolean, true if dark mode is activated, otherwise false
+//  * A boolean, true if dark mode is activated, otherwise false (if unsupported will return always false)
 static int uielement_darkModeStatus(lua_State* L) {
-    NSString *mode = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"];
-    BOOL isActivated = [mode isEqualToString: @"Dark"];
-    lua_pushboolean(L, (int) isActivated);
+    if (NSAppKitVersionNumber < NSAppKitVersionNumber10_10) {
+        lua_pushboolean(L, 0);
+
+        return 1;
+    }
+    @try {
+        NSString *mode = [[[NSUserDefaults standardUserDefaults] persistentDomainForName:NSGlobalDomain] valueForKey:@"AppleInterfaceStyle"];
+        BOOL isActivated = [mode isEqualToString: @"Dark"];
+        lua_pushboolean(L, (int) isActivated);
+
+        return 1;
+    }
+    @catch (NSException *exception){
+        lua_pushboolean(L, 0);
+
+        return 0;
+    }
+}
+
+// hs.uielement.setDarkMode(status) -> bool
+// Function
+// Sets the status of OSX UI dark mode
+//
+// Parameters:
+//  * status - A bool, true if dark mode should be turned on, otherwise false
+//
+// Returns:
+//  * A boolean, true if dark mode was activated, otherwise false
+static int uielement_setDarkMode(lua_State* L) {
 
     return 1;
 }

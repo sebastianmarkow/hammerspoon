@@ -200,4 +200,12 @@ function uielement.watcher:element()
     return self._element
 end
 
+function uielement:darkModeToggle()
+    if uielement.darkModeStatus() then
+        
+    else
+
+    end
+end
+
 return uielement
